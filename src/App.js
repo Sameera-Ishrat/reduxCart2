@@ -1,23 +1,37 @@
-import logo from './logo.svg';
-import './App.css';
+import React, { useEffect } from "react";
+
+import Navbar from "./components/Navbar";
+import { useDispatch, useSelector } from "react-redux";
+import { calculateTotals, getCartSlice } from "./features/cart/cartSlice";
+import CartContainer from "./components/CartContainer";
+import { openModal } from "./features/modal/modalSlice";import Modal from "./components/Modal";
+
 
 function App() {
+  const dispatch = useDispatch();
+
+  const {isOpen} = useSelector((state) => state.modal)
+
+  const { cartItems, isLoading } = useSelector((state) => state.cart);
+
+  //useEffect for the total
+
+  useEffect(() => {
+    dispatch(calculateTotals());
+  }, [dispatch, cartItems]);
+
+  useEffect(() => {
+    dispatch(getCartSlice());
+  }, [dispatch]);
+
+  if (isLoading) {
+    return <h1>Loading...</h1>;
+  }
   return (
     <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
+      <Navbar />
+      <CartContainer />
+    {isOpen && <Modal />}
     </div>
   );
 }
